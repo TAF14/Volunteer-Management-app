@@ -35,7 +35,7 @@ To run this application on your local machine, follow these step-by-step instruc
 
 ## Repository and Hosted Application Links
 ## GitHub Repository:
-- [Volunteer Management Repo](https://github.com/TAF14/Volunteer-Management)
+- [Volunteer Management Repo](https://github.com/TAF14/Volunteer-Management-app)
 
 ## Hosted Application:
-- [Hosted App Link](https://volunteer-management-production.up.railway.app/)
+- [Hosted App Link](https://volunteer-management-app-production.up.railway.app/)
