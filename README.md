@@ -29,12 +29,13 @@ To run this application on your local machine, follow these step-by-step instruc
 - [Express.js](https://expressjs.com/)
 - [Pug](https://pugjs.org/api/getting-started.html)
 - [Nodemon](https://www.npmjs.com/package/nodemon?activeTab=readme)
+- [MongoDB]
 
-# Repository and Hosted Application Links
+
+
+## Repository and Hosted Application Links
 ## GitHub Repository:
 - [Volunteer Management Repo](https://github.com/TAF14/Volunteer-Management)
 
 ## Hosted Application:
 - [Hosted App Link](https://volunteer-management-production.up.railway.app/)
-
-...
