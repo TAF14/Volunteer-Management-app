@@ -1,0 +1,85 @@
+include ../head.pug
+
+body(style="background: linear-gradient(to right, #ff6b6b, #f37335); color: #fff; padding: 20px;")
+
+  .container.mt-5(style="background-color: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px;")
+
+    h1(style="color: #f37335; text-align: center;") #{mode}
+
+    .mb-3
+      label(for="eventName" class="form-label" style="color: #333;") Event Name
+      input(type="text" class="form-control" id="eventName" name="eventName" required style="background-color: #eee; color: #333;" placeholder="Enter Event Name")
+
+    .mb-3
+      label(for="eventDateTime" class="form-label" style="color: #333;") Event Date/Time
+      .input-group.date(id="datetimepicker1" data-target-input="nearest")
+        input(type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1" id="eventDateTime" name="eventDateTime" required style="background-color: #eee; color: #333;" placeholder="Select Date/Time")
+        .input-group-append(data-target="#datetimepicker1" data-toggle="datetimepicker")
+          .input-group-text(style="background-color: #eee;")
+            i.fas.fa-calendar-alt(style="color: #333;")
+
+    .mb-3
+      label(for="venue" class="form-label" style="color: #333;") Venue
+      input(type="text" class="form-control" id="venue" name="venue" required style="background-color: #eee; color: #333;" placeholder="Enter Venue")
+
+    .mb-3
+      label(for="contactPhone" class="form-label" style="color: #333;") Contact Phone
+      input(type="tel" class="form-control" id="contactPhone" name="contactPhone" required style="background-color: #eee; color: #333;" placeholder="Enter Contact Phone")
+
+    .mb-3
+      label(for="seat" class="form-label" style="color: #333;") Seat
+      input(type="text" class="form-control" id="seat" name="seat" required style="background-color: #eee; color: #333;" placeholder="Enter Seat")
+
+    button(type="submit" class="btn btn-success" onclick="submitForm()" style="background-color: #62d76b; color: #fff;") #{mode === 'Update' ? 'Update' : 'Add'}
+    
+    span &nbsp;
+    
+    button(type="submit" class="btn btn-primary" onclick="window.location.href='/'" style="background-color: #4b7bec; color: #fff;") Back to list
+
+  script.
+    const format = 'DD/MM/YYYY HH:mm'
+    const picker = new tempusDominus.TempusDominus(document.getElementById('datetimepicker1'),{
+        localization: {
+            'locale': 'us'
+        }
+    })
+    picker.dates.formatInput = function(date) {
+        return moment(date).format(format)
+    }
+
+    if ("#{mode}" === "Update") {
+      const eventData = !{JSON.stringify(eventData || {})}.event;
+      document.getElementById('eventName').value = eventData.eventName || '';
+
+      picker.dates.setValue(
+        new tempusDominus.DateTime(moment(eventData.eventDateTime, format))
+      );
+
+      document.getElementById('venue').value = eventData.venue || '';
+      document.getElementById('contactPhone').value = eventData.contactPhone || '';
+      document.getElementById('seat').value = eventData.seat || '';
+    }
+
+    function submitForm() {
+      const eventData = {
+        eventName: document.getElementById('eventName').value,
+        eventDateTime: document.getElementById('eventDateTime').value,
+        venue: document.getElementById('venue').value,
+        contactPhone: document.getElementById('contactPhone').value,
+        seat: document.getElementById('seat').value,
+      };
+
+      const url = "#{mode}" === "Update" ? `/api/event/${!{JSON.stringify(eventData || {})}.id}` : '/api/event';
+      const method = "#{mode}" === "Update" ? 'put' : 'post';
+
+      axios[method](url, eventData).then(response => {
+        alert('Success!');
+        location.href = '/'
+      })
+      .catch(error => {
+        if(error.response)
+          alert(JSON.stringify(error.response.data.errors))
+        else
+          alert(error)
+      });
+    }

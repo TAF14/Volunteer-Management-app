@@ -1,0 +1,82 @@
+include ../head.pug
+
+body(style="background-color: #f0f0f0; padding-top: 50px;")
+  .container.mt-5(style="background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);")
+    .row.d-flex.align-items-center
+      .col-md-6
+        h1(style="color: #2ecc71;") Volunteer Management Application
+      .col-md-6.text-end
+        a.btn.btn-success(href='/add', role='button', style="background-color: #28a745; border-color: #28a745; color: #ffffff;") Add
+
+    // Check if events is defined and not an empty array
+    - if (events && events.length > 0)
+      each t in events
+        .col-md-4.mb-4
+          .card(style="background-color: #ffffff; border: 1px solid #ecf0f1; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);")
+            .card-body
+              h5.card-title(style="color: #2ecc71;") #{t.event.eventName}
+              p.card-text(style="color: #34495e;")
+                strong Event Date & Time:
+                |  #{t.event.eventDateTime}
+                br
+                strong Venue:
+                |  #{t.event.venue}
+                br
+                strong Contact Phone:
+                |  #{t.event.contactPhone}
+                br
+                strong Seat:
+                |  #{t.event.seat}
+            .card-footer
+              button.btn.btn-primary.btn-sm(data-id=t.id, onclick=`window.location.href='/update/${t.id}'`, style="background-color: #2ecc71; border-color: #2ecc71;") Update
+              button.btn.btn-danger.btn-sm(data-id=t.id, style="background-color: #e74c3c; border-color: #e74c3c;") Delete
+
+  .disclaimer(style="color: #7f8c8d; font-size: 18px; text-align: center; margin-top: 20px;")
+    p(style="margin-bottom: 0;") This web application was created to fulfill Web Technology module's requirements and does not represent an actual company or service.
+
+script.
+  document.addEventListener('DOMContentLoaded', function() {
+    axios.get('/api/event').then(function(response) {
+      const events = response.data;
+      events.forEach(t => {
+        const cardContainer = document.querySelector('.row');
+        const cardCol = document.createElement('div');
+        cardCol.className = 'col-md-4 mb-4';
+        cardCol.innerHTML = `
+          <div class="card" style="background-color: #fff; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+            <div class="card-body">
+              <h5 class="card-title" style="color: #2ecc71;">${t.event.eventName}</h5>
+              <p class="card-text" style="color: #7f8c8d;">
+                <strong>Event Date & Time:</strong> ${t.event.eventDateTime}<br>
+                <strong>Venue:</strong> ${t.event.venue}<br>
+                <strong>Contact Phone:</strong> ${t.event.contactPhone}<br>
+                <strong>Seat:</strong> ${t.event.seat}
+              </p>
+            </div>
+            <div class="card-footer" style="background-color: #ecf0f1; border-radius: 0 0 10px 10px;">
+              <button class="btn btn-primary btn-sm" data-id="${t.id}" onclick="window.location.href='/update/${t.id}'" style="background-color: #2ecc71; border-color: #2ecc71;">Update</button>
+              <button class="btn btn-danger btn-sm" data-id="${t.id}" style="background-color: #e74c3c; border-color: #e74c3c;">Delete</button>
+            </div>
+          </div>
+        `;
+        cardContainer.appendChild(cardCol);
+      });
+    })
+    .catch(function(error) {
+      console.log(error);
+    });
+
+    // Use event delegation for delete buttons
+    document.addEventListener('click', function(event) {
+      if (event.target && event.target.classList.contains('btn-danger')) {
+        const eventId = event.target.getAttribute('data-id');
+        axios.delete(`/api/event/${eventId}`).then(function(response) {
+          alert('Deleted successfully', response);
+          location.href = '/'
+        })
+        .catch(function(error) {
+          alert('Error deleting event: ' + error);
+        });
+      }
+    });
+  });
